@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+    <h1>Welcome back, {{ username }} 👋</h1>
+    <p>Your workspace is ready.</p>
+
+    <div style="margin-top:20px;">
+        <a href="{{ url_for('contacts') }}" class="btn">View Contacts</a>
+        <a href="{{ url_for('profile') }}" class="btn">Profile</a>
+    </div>
+</div>
+
+{% endblock %}

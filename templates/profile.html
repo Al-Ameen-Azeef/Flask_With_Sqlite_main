@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+    <h2>Your Profile</h2>
+
+```
+{% with messages = get_flashed_messages() %}
+  {% for msg in messages %}
+    <p style="color: green;">{{ msg }}</p>
+  {% endfor %}
+{% endwith %}
+
+<form method="POST">
+    <label>Username</label>
+    <input type="text" value="{{ user[0] }}" disabled>
+
+    <label>Email</label>
+    <input type="email" name="email" value="{{ user[1] }}" required>
+
+    <button type="submit">Update</button>
+</form>
+```
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+
+<head>
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<title>Flask App</title> 
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f7fa;
+    margin: 0;
+}
+
+nav {
+    background: #1e293b;
+    padding: 15px 30px;
+}
+
+nav ul {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+}
+
+nav a {
+    color: #e2e8f0;
+    text-decoration: none;
+}
+
+.container {
+    padding: 30px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 30px auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button, .btn {
+    background: #2563eb;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th {
+    background: #1e293b;
+    color: white;
+}
+
+.table td, .table th {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table tr:hover {
+    background: #f1f5f9;
+}
+</style>
+</head>
+
+<body>
+<nav>
+<ul>
+<li><a href="{{ url_for('index') }}">Home</a></li>
+
+{% if 'user' in session %}
+<li><a href="/dashboard">Dashboard</a></li>
+<li><a href="/contacts">Contacts</a></li>
+
+{% if session['user'] == 'admin' %}
+<li><a href="/admin">Admin</a></li>
+{% endif %}
+
+<li><a href="/logout">Logout</a></li>
+{% endif %}
+</ul>
+</nav>
+
+<main class="container">
+{% block content %}{% endblock %}
+</main>
+
+</body>
+</html>

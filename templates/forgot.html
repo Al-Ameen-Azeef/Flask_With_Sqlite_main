@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+<h2>Forgot Password</h2>
+
+{% with messages = get_flashed_messages() %}
+  {% for msg in messages %}
+    <p style="color: red;">{{ msg }}</p>
+  {% endfor %}
+{% endwith %}
+
+<form method="POST">
+    <input type="email" name="email" placeholder="Your Email" required>
+    <button type="submit">Send OTP</button>
+</form>
+
+</div>
+
+{% endblock %}

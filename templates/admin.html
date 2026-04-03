@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+    <h2>Admin Dashboard</h2>
+
+```
+<h3>Users</h3>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Action</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user[0] }}</td>
+        <td>{{ user[1] }}</td>
+        <td>{{ user[2] }}</td>
+        <td>
+            <a href="/delete_user/{{ user[0] }}" class="btn" style="background:red;">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>All Contact Messages</h3>
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>User</th>
+    </tr>
+
+    {% for contact in contacts %}
+    <tr>
+        <td>{{ contact[0] }}</td>
+        <td>{{ contact[1] }}</td>
+        <td>{{ contact[2] }}</td>
+        <td>{{ contact[3] }}</td>
+        <td>{{ contact[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+```
+
+</div>
+
+{% endblock %}

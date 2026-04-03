@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+    <h2>Contact Messages</h2>
+
+```
+{% if contacts %}
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>User</th>
+    </tr>
+
+    {% for contact in contacts %}
+    <tr>
+        <td>{{ contact[0] }}</td>
+        <td>{{ contact[1] }}</td>
+        <td>{{ contact[2] }}</td>
+        <td>{{ contact[3] }}</td>
+        <td>{{ contact[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <p>No contacts found.</p>
+{% endif %}
+```
+
+</div>
+
+{% endblock %}
