@@ -1,59 +1,36 @@
 # Flask Contact Management System
 
-## 🚀 Features
+A secure Flask-based web application that provides user authentication, email OTP verification, contact form handling, and an admin dashboard.
 
-* User Registration & Login
-* Email OTP Verification
-* Password Reset with OTP
-* Admin Dashboard
-* Contact Form Management
-* Role-Based Access (Admin/User)
-* Secure Password Hashing
+---
 
-## 🛠 Tech Stack
+# 🚀 Features
 
-* Python (Flask)
-* SQLite
-* HTML/CSS
-* Jinja2
+- User Registration & Login
+- Email OTP Verification
+- Password Reset with OTP
+- Contact Form Submission
+- Admin Dashboard
+- View All Contact Messages
+- Delete Users (Admin Only)
+- Role-Based Access Control (Admin/User)
+- Secure Password Hashing (Werkzeug)
+- Session Management & Validation
 
-## ⚙️ Setup Instructions
+---
 
+# 🛠 Tech Stack
+
+- **Backend:** Flask (Python)
+- **Database:** SQLite
+- **Frontend:** HTML, CSS (Jinja2 Templates)
+- **Email Service:** Gmail SMTP
+
+---
+
+# ⚙️ Setup Instructions
+
+ 1. Clone the Repository
 ```bash
-git clone <your-repo-url>
-cd project-folder
-
-python -m venv venv
-source venv/bin/activate
-
-pip install -r requirements.txt
-python app.py
-```
-
-## 🔐 Environment Variables
-
-Set:
-
-```bash
-export EMAIL_USER="your_email@gmail.com"
-export EMAIL_PASS="your_app_password"
-```
-
-## 🌐 Run
-
-Open:
-
-```
-http://127.0.0.1:5000
-```
-
-## ⚠️ Security Features
-
-* Password hashing (Werkzeug)
-* Session handling
-* OTP verification
-* Role-based access control
-
-## 👨‍💻 Author
-
-Al-Ameen Azeef
+git clone https://github.com/Al-Ameen-Azeef/Flask_With_Sqlite_main.git
+cd Flask_With_Sqlite_main
