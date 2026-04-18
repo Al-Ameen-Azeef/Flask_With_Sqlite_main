@@ -7,6 +7,9 @@ from email.mime.text import MIMEText
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev_key_change_me")
@@ -54,27 +57,45 @@ def init_db():
     conn.close()
 
 def send_otp(email, otp):
+    import smtplib
+    import os
+
     sender = os.getenv("EMAIL_USER")
     password = os.getenv("EMAIL_PASS")
+
+    print("Sender:", sender)
+    print("Receiver:", email)
 
     if not sender or not password:
         print("Email credentials not set!")
         return
 
-    msg = MIMEText(f"Your OTP is: {otp}")
-    msg['Subject'] = "OTP Verification"
-    msg['From'] = sender
-    msg['To'] = email
+    subject = "Your OTP Code"
+    body = f"""
+Hello,
+
+Your OTP is: {otp}
+
+This OTP is valid for 5 minutes.
+
+Regards,
+Flask App
+"""
+
+    message = f"Subject: {subject}\n\n{body}"
 
     try:
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
         server.login(sender, password)
-        server.sendmail(sender, email, msg.as_string())
+        server.sendmail(sender, email, message)
         server.quit()
+
         print("OTP sent successfully!")
+
     except Exception as e:
         print("Email error:", e)
-
+        
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -97,6 +118,8 @@ def index():
         return redirect('/')
 
     return render_template('index.html')
+
+import sqlite3
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -137,28 +160,36 @@ def register():
 
             return redirect('/verify')
 
-        except:
-            flash("User already exists!")
+        except sqlite3.IntegrityError:
+            flash("Username or Email already exists!")
+            return redirect('/register')
+
+        except Exception as e:
+            print("REAL ERROR:", e)
+            flash("Something went wrong!")
             return redirect('/register')
 
         finally:
             conn.close()
 
+    # 🔥 THIS MUST ALWAYS EXIST
     return render_template('register.html')
 
 @app.route('/verify', methods=['GET','POST'])
 def verify():
+    username = session.get('verify_user')
+
+    if not username:
+        flash("Session expired. Register again.")
+        return redirect('/register')
+
     if request.method == 'POST':
         conn = get_db()
         cursor = conn.cursor()
 
-        username = session.get('verify_user')
-        if not username:
-            flash("Session expired. Register again.")
-            return redirect('/register')
-
         otp = request.form['otp']
 
+        # 🔒 Limit attempts
         if 'otp_attempts' not in session:
             session['otp_attempts'] = 0
 
@@ -168,20 +199,77 @@ def verify():
             flash("Too many attempts. Try later.")
             return redirect('/login')
 
-        cursor.execute("SELECT otp, otp_expiry FROM users WHERE username=?", (username,))
+        cursor.execute(
+            "SELECT otp, otp_expiry FROM users WHERE username=?",
+            (username,)
+        )
         data = cursor.fetchone()
 
         if data and data['otp'] == otp and int(time.time()) < data['otp_expiry']:
-            cursor.execute("UPDATE users SET is_verified=1 WHERE username=?", (username,))
+            cursor.execute(
+                "UPDATE users SET is_verified=1 WHERE username=?",
+                (username,)
+            )
             conn.commit()
+            conn.close()
+
             session.pop('otp_attempts', None)
-            flash("Verified!")
+            session.pop('verify_user', None)
+
+            flash("Verified successfully!")
             return redirect('/login')
 
-        flash("Invalid OTP")
+        flash("Invalid or expired OTP")
         conn.close()
 
     return render_template('verify.html')
+
+
+@app.route('/resend-otp', methods=['POST'])
+def resend_otp():
+    username = session.get('verify_user')
+
+    if not username:
+        flash("Session expired. Please register again.")
+        return redirect('/register')
+
+    # 🔒 Rate limiting (30 sec)
+    last_sent = session.get('last_otp_time', 0)
+    if time.time() - last_sent < 30:
+        flash("Please wait before requesting another OTP.")
+        return redirect('/verify')
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Generate new OTP
+    otp = str(random.randint(100000, 999999))
+    expiry = int(time.time()) + 300
+
+    cursor.execute(
+        "UPDATE users SET otp=?, otp_expiry=? WHERE username=?",
+        (otp, expiry, username)
+    )
+    conn.commit()
+
+    # Get email safely
+    cursor.execute("SELECT email FROM users WHERE username=?", (username,))
+    result = cursor.fetchone()
+
+    if not result:
+        conn.close()
+        flash("User not found!")
+        return redirect('/register')
+
+    email = result['email']
+    conn.close()
+
+    send_otp(email, otp)
+
+    session['last_otp_time'] = time.time()
+
+    flash("New OTP sent to your email!")
+    return redirect('/verify')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -269,8 +357,8 @@ def dashboard():
         return redirect('/login')
     return render_template('dashboard.html', username=session['user'])
 
-@app.route('/contacts')
-def contacts():
+@app.route('/messages')
+def messages():
     if 'user' not in session:
         return redirect('/login')
 
@@ -295,7 +383,30 @@ def contacts():
     contacts = cursor.fetchall()
     conn.close()
 
-    return render_template('contacts.html', contacts=contacts)
+    return render_template('messages.html', contacts=contacts)
+
+@app.route('/contact', methods=['GET','POST'])
+def contact():
+    if 'user' not in session:
+        flash("Login required!")
+        return redirect('/login')
+
+    if request.method == 'POST':
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "INSERT INTO contact (name,email,message,username) VALUES (?,?,?,?)",
+            (request.form['name'], request.form['email'], request.form['message'], session['user'])
+        )
+
+        conn.commit()
+        conn.close()
+
+        flash("Message sent!")
+        return redirect('/contact')
+
+    return render_template('contact_form.html')
 
 @app.route('/delete_user/<int:user_id>')
 def delete_user(user_id):
@@ -327,6 +438,72 @@ def delete_user(user_id):
 
     flash("User deleted successfully!")
     return redirect('/admin')
+
+@app.route('/reset', methods=['GET','POST'])
+def reset():
+    if request.method == 'POST':
+        conn = get_db()
+        cursor = conn.cursor()
+
+        email = request.form['email']
+
+        # Check if user exists
+        cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            flash("Email not found!")
+            return redirect('/reset')
+
+        # Generate OTP
+        otp = str(random.randint(100000,999999))
+        expiry = int(time.time()) + 300
+
+        cursor.execute(
+            "UPDATE users SET otp=?, otp_expiry=? WHERE email=?",
+            (otp, expiry, email)
+        )
+        conn.commit()
+        conn.close()
+
+        send_otp(email, otp)
+
+        session['reset_email'] = email
+        return redirect('/reset_verify')
+
+    return render_template('reset.html')
+
+@app.route('/reset_verify', methods=['GET','POST'])
+def reset_verify():
+    if request.method == 'POST':
+        conn = get_db()
+        cursor = conn.cursor()
+
+        email = session.get('reset_email')
+        otp = request.form['otp']
+        new_password = request.form['password']
+
+        cursor.execute("SELECT otp, otp_expiry FROM users WHERE email=?", (email,))
+        data = cursor.fetchone()
+
+        if data and data['otp'] == otp and int(time.time()) < data['otp_expiry']:
+            password = generate_password_hash(new_password)
+
+            cursor.execute(
+                "UPDATE users SET password=? WHERE email=?",
+                (password, email)
+            )
+            conn.commit()
+            conn.close()
+
+            flash("Password reset successful!")
+            return redirect('/login')
+
+        flash("Invalid OTP")
+        conn.close()
+
+    return render_template('reset_verify.html')
+
 
 @app.route('/logout')
 def logout():
