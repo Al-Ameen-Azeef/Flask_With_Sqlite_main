@@ -13,3 +13,4 @@ packaging==26.0
 secure-smtplib==0.1.1
 Werkzeug==3.0.1
 gunicorn
+python-dotenv
