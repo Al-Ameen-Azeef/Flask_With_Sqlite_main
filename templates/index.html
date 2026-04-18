@@ -1,25 +1,12 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<div class="card">
-    <h1>Contact Us</h1>
-    <p>We'd love to hear from you.</p>
+<div class="card" style="max-width: 600px; text-align:center;">
+    <h1>Welcome to Flask App</h1>
+    <p>Your secure web application is ready.</p>
 
-```
-{% with messages = get_flashed_messages() %}
-  {% for msg in messages %}
-    <p style="color: green;">{{ msg }}</p>
-  {% endfor %}
-{% endwith %}
-
-<form method="POST">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="email" name="email" placeholder="Your Email" required>
-    <textarea name="message" placeholder="Your Message" required></textarea>
-    <button type="submit">Send Message</button>
-</form>
-```
-
+    <a href="{{ url_for('dashboard') }}" class="btn">Go to Dashboard</a>
 </div>
 
 {% endblock %}

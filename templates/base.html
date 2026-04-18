@@ -1,10 +1,9 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="UTF-8"> 
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-<title>Flask App</title> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flask App</title>
 
 <style>
 body {
@@ -29,36 +28,29 @@ nav a {
     text-decoration: none;
 }
 
-.container {
-    padding: 30px;
-}
-
-.card {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    max-width: 800px;
-    margin: 30px auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-input, textarea {
+/*  FIX ADMIN TABLE WIDTH */
+.admin-card {
+    max-width: none !important;
     width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
 }
 
-button, .btn {
-    background: #2563eb;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
+/* ===== CONTAINER =====
+.container.full {
+    display: block;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+} */
+
+/* ===== CENTER NORMAL PAGES (CONTACT, LOGIN, DASHBOARD) ===== */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
 }
 
+/* ===== TABLE ===== */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -70,37 +62,111 @@ button, .btn {
     color: white;
 }
 
-.table td, .table th {
+.table th, .table td {
     padding: 10px;
     border-bottom: 1px solid #ddd;
+    text-align: left;
+    vertical-align: top;
 }
 
+/*  CONTROL COLUMN WIDTHS */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 40px;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 100px;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 180px;
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    width: 250px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 100px;
+}
+
+/* Hover */
 .table tr:hover {
     background: #f1f5f9;
 }
+
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    padding: 10px;
+    border: none;
+}
+
+
+
 </style>
+
 </head>
 
 <body>
+
 <nav>
 <ul>
-<li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('index') }}">Home</a></li>
 
-{% if 'user' in session %}
-<li><a href="/dashboard">Dashboard</a></li>
-<li><a href="/contacts">Contacts</a></li>
+    {% if 'user' in session %}
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        <li><a href="{{ url_for('messages') }}">Messages</a></li>
+        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
 
-{% if session['user'] == 'admin' %}
-<li><a href="/admin">Admin</a></li>
-{% endif %}
+        <!--  ADD ADMIN HERE -->
+        {% if session.get('user') == 'admin' %}
+            <li><a href="{{ url_for('admin') }}">Admin</a></li>
+        {% endif %}
 
-<li><a href="/logout">Logout</a></li>
-{% endif %}
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    {% else %}
+        <li><a href="{{ url_for('login') }}">Login</a></li>
+        <li><a href="{{ url_for('register') }}">Register</a></li>
+    {% endif %}
 </ul>
 </nav>
 
-<main class="container">
-{% block content %}{% endblock %}
+<!--  Flash messages -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p style="color:green; text-align:center;">{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!--  Main content -->
+<main class="container {% block page_class %}{% endblock %}">
+    {% block content %}{% endblock %}
 </main>
 
 </body>

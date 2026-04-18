@@ -1,52 +1,69 @@
 {% extends "base.html" %}
+
+{% block page_class %}full{% endblock %}
+
 {% block content %}
 
-<div class="card">
-    <h2>Admin Dashboard</h2>
+<div style="max-width:1200px; margin:auto;">
 
-```
-<h3>Users</h3>
-<table class="table">
-    <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Action</th>
-    </tr>
+    <h2 style="margin-bottom:20px;">Admin Dashboard</h2>
 
-    {% for user in users %}
-    <tr>
-        <td>{{ user[0] }}</td>
-        <td>{{ user[1] }}</td>
-        <td>{{ user[2] }}</td>
-        <td>
-            <a href="/delete_user/{{ user[0] }}" class="btn" style="background:red;">Delete</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    <div style="display:block;">
 
-<h3>All Contact Messages</h3>
-<table class="table">
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Message</th>
-        <th>User</th>
-    </tr>
+        <!-- USERS -->
+        <div class="card admin-card" style="margin-bottom:30px;">
+            <h3>Users</h3>
 
-    {% for contact in contacts %}
-    <tr>
-        <td>{{ contact[0] }}</td>
-        <td>{{ contact[1] }}</td>
-        <td>{{ contact[2] }}</td>
-        <td>{{ contact[3] }}</td>
-        <td>{{ contact[4] }}</td>
-    </tr>
-    {% endfor %}
-</table>
-```
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for user in users %}
+                <tr>
+                    <td>{{ user[0] }}</td>
+                    <td>{{ user[1] }}</td>
+                    <td>{{ user[2] }}</td>
+                    <td>
+                        <a href="/delete_user/{{ user[0] }}" 
+                           style="color:white; background:red; padding:5px 8px; border-radius:6px; text-decoration:none;">
+                           Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="card admin-card">
+            <h3>All Messages</h3>
+
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>User</th>
+                </tr>
+
+                {% for contact in contacts %}
+                <tr>
+                    <td>{{ contact[0] }}</td>
+                    <td>{{ contact[1] }}</td>
+                    <td>{{ contact[2] }}</td>
+                    <td>{{ contact[3] }}</td>
+                    <td>{{ contact[4] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div> <!-- ✅ CLOSED THIS -->
 
 </div>
 

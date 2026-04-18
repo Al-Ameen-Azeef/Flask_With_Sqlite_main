@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block page_class %}full{% endblock %}
+
+{% block content %}
+
+<div class="card" style="max-width: 1200px; width:100%;">
+    <h2>Messages</h2>
+
+    {% if contacts %}
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Message</th>
+            <th>User</th>
+        </tr>
+
+        {% for contact in contacts %}
+        <tr>
+            <td>{{ contact[0] }}</td>
+            <td>{{ contact[1] }}</td>
+            <td>{{ contact[2] }}</td>
+            <td>{{ contact[3] }}</td>
+            <td>{{ contact[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div style="text-align:center; padding:40px;">
+        <h3>No messages yet</h3>
+        <p>Start by sending a message.</p>
+        <a href="{{ url_for('contact') }}" class="btn">Send Message</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

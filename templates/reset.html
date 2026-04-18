@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+    <h2>Reset Password</h2>
+
+    <form method="POST">
+        <input type="email" name="email" placeholder="Enter your email" required>
+        <button type="submit">Send OTP</button>
+    </form>
+
+</div>
+
+{% endblock %}

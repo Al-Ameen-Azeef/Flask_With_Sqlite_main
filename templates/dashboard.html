@@ -1,13 +1,16 @@
+
+{% block page_class %}{% endblock %}
 {% extends "base.html" %}
+
 {% block content %}
 
-<div class="card">
-    <h1>Welcome back, {{ username }} 👋</h1>
+<div class="card" style="max-width: 600px; text-align:center;">
+    <h2>Welcome back, {{ username }} 👋</h2>
     <p>Your workspace is ready.</p>
 
     <div style="margin-top:20px;">
-        <a href="{{ url_for('contacts') }}" class="btn">View Contacts</a>
-        <a href="{{ url_for('profile') }}" class="btn">Profile</a>
+        <a href="{{ url_for('messages') }}">View Messages</a> |
+        <a href="{{ url_for('profile') }}">Profile</a>
     </div>
 </div>
 
